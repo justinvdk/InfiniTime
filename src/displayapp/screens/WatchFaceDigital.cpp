@@ -51,12 +51,22 @@ WatchFaceDigital::WatchFaceDigital(Controllers::DateTime& dateTimeController,
   lv_label_set_text(temperature, "");
   lv_obj_align(temperature, nullptr, LV_ALIGN_IN_TOP_MID, 20, 50);
 
+  label_prompt_1 = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(label_prompt_1, true);
+  lv_obj_align(label_prompt_1, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -80);
+  lv_label_set_text_static(label_prompt_1, "#0082fc ~ ##6a6a6a ── ##d6af8a justin@watch ##6a6a6a ─╮");
+
+  label_prompt_2 = lv_label_create(lv_scr_act(), nullptr);
+  lv_label_set_recolor(label_prompt_2, true);
+  lv_obj_align(label_prompt_2, lv_scr_act(), LV_ALIGN_IN_LEFT_MID, 0, -60);
+  lv_label_set_text_static(label_prompt_2, "#70de35 ❯ #                #6a6a6a ─╯#");
+
   label_date = lv_label_create(lv_scr_act(), nullptr);
   lv_obj_align(label_date, lv_scr_act(), LV_ALIGN_CENTER, 0, 60);
   lv_obj_set_style_local_text_color(label_date, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, lv_color_hex(0x999999));
 
   label_time = lv_label_create(lv_scr_act(), nullptr);
-  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed);
+  lv_obj_set_style_local_text_font(label_time, LV_LABEL_PART_MAIN, LV_STATE_DEFAULT, &jetbrains_mono_extrabold_compressed_50);
 
   lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
 
@@ -101,11 +111,11 @@ void WatchFaceDigital::Refresh() {
     lv_label_set_text_static(notificationIcon, NotificationIcon::GetIcon(notificationState.Get()));
   }
 
-  currentDateTime = std::chrono::time_point_cast<std::chrono::minutes>(dateTimeController.CurrentDateTime());
-
+  currentDateTime = dateTimeController.CurrentDateTime();
   if (currentDateTime.IsUpdated()) {
     uint8_t hour = dateTimeController.Hours();
     uint8_t minute = dateTimeController.Minutes();
+    uint8_t second = dateTimeController.Seconds();
 
     if (settingsController.GetClockType() == Controllers::Settings::ClockType::H12) {
       char ampmChar[3] = "AM";
@@ -118,10 +128,10 @@ void WatchFaceDigital::Refresh() {
         ampmChar[0] = 'P';
       }
       lv_label_set_text(label_time_ampm, ampmChar);
-      lv_label_set_text_fmt(label_time, "%2d:%02d", hour, minute);
+      lv_label_set_text_fmt(label_time, "%2d:%02d:%02d", hour, minute, second);
       lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_IN_RIGHT_MID, 0, 0);
     } else {
-      lv_label_set_text_fmt(label_time, "%02d:%02d", hour, minute);
+      lv_label_set_text_fmt(label_time, "%02d:%02d:%02d", hour, minute, second);
       lv_obj_align(label_time, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
     }
 
